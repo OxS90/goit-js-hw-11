@@ -94,7 +94,7 @@ function whileSearching(event) {
 // Fetch gallery function
 async function fetchGallery() {
   if (apiRequest.pageCount > totalPages) {
-    Notify.info("You've reached the end of search results.");
+    Notify.info("We're sorry, but you've reached the end of search results.");
     endreached = true;
     scrollToTopButton.style.display = 'block';
     return;
@@ -110,7 +110,9 @@ async function fetchGallery() {
   const { hits, total } = result;
   if (apiRequest.pageCount === 2) {
     if (total === 0) {
-      Notify.failure(`No images match your search query. Please try again.`);
+      Notify.failure(
+        `Sorry, there are no images matching your search query. Please try again.`
+      );
       return;
     }
     totalPages = Math.floor(total / perPage) + 1;
