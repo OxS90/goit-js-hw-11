@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <!-- search form -->
@@ -15,8 +16,10 @@
         placeholder="Search images..."
       />
       <button type="submit">Search</button>
-      <!-- <div class="gallery">
-        <div class="photo-card">
+    </form>
+    <!-- gallery -->
+    <div class="gallery" id="gallery">
+      <!-- <div class="photo-card">
           <img src="" alt="" loading="lazy" />
           <div class="info">
             <p class="info-item">
@@ -32,11 +35,11 @@
               <b>Downloads</b>
             </p>
           </div>
-        </div>
-      </div> -->
-    </form>
-    <!-- gallery -->
-    <div class="gallery" id="gallery"></div>
+        </div> -->
+    </div>
+    <!-- load-more button -->
+    <button type="button" class="load-more">Load more</button>
+    <button type="button" class="to-search-form">To search form</button>
     <script src="index.js" type="module"></script>
   </body>
 </html>

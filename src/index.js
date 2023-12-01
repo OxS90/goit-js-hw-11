@@ -48,13 +48,13 @@ const searchForm = document.querySelector('.search-form');
 const inputEl = document.querySelector('form > input');
 const gallery = document.querySelector('.gallery');
 const scrollToTopButton = document.createElement('button');
-
+const loadMoreButton = document.querySelector('.load-more');
+loadMoreButton.style.display = 'none';
+scrollToTopButton.style.display = 'none';
 // Set up event listener for the search form
 searchForm.addEventListener('submit', whileSearching);
-
-// Set up event listener for the scroll (infinite scrolling)
-window.addEventListener('scroll', () => {
-  throttle(handleInfiniteScroll, 250);
+loadMoreButton.addEventListener('click', () => {
+  fetchGallery();
 });
 
 // Set up event listener for the "Home" button
@@ -62,11 +62,6 @@ scrollToTopButton.addEventListener('click', () => {
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 });
-
-// Home button for end of scrolling (final page)
-scrollToTopButton.innerText = 'Home';
-scrollToTopButton.id = 'scroll-top';
-document.body.appendChild(scrollToTopButton);
 
 // Initialize variables for infinite scrolling
 let perPage = 40;
@@ -80,6 +75,7 @@ function whileSearching(event) {
   event.preventDefault();
   gallery.innerHTML = '';
   endreached = false;
+  loadMoreButton.style.display = 'none';
   scrollToTopButton.style.display = 'none';
   apiRequest.query = inputEl.value.trim();
   apiRequest.pageCount = 1;
@@ -97,6 +93,7 @@ async function fetchGallery() {
     Notify.info("We're sorry, but you've reached the end of search results.");
     endreached = true;
     scrollToTopButton.style.display = 'block';
+    loadMoreButton.style.display = 'block';
     return;
   }
 
@@ -122,6 +119,7 @@ async function fetchGallery() {
   displayImages(hits);
 
   if (apiRequest.pageCount === 2) {
+    loadMoreButton.style.display = 'block';
     lightbox = new SimpleLightbox('.gallery a', {
       captions: true,
       captionsData: 'alt',
@@ -165,23 +163,3 @@ function displayImages(images) {
     scrollToTopButton.style.display = 'block';
   }
 }
-
-// Function to handle infinite scrolling
-let throttlePause;
-
-const throttle = (callback, time) => {
-  if (throttlePause) return;
-  throttlePause = true;
-  setTimeout(() => {
-    callback();
-    throttlePause = false;
-  }, time);
-};
-
-const handleInfiniteScroll = () => {
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-
-  if (scrollTop + clientHeight >= scrollHeight - 5 && !endreached) {
-    fetchGallery();
-  }
-};
