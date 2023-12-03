@@ -1,3 +1,9 @@
+:root {
+  --primary-color: #007bff;
+  --secondary-color: darkgrey;
+  --timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-duration: 250ms;
+}
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
@@ -7,6 +13,7 @@ body {
   justify-content: flex-start;
   height: 100vh;
   background-color: #f0f0f0;
+  scroll-behavior: smooth;
 }
 
 .search-form {
@@ -15,28 +22,34 @@ body {
 }
 
 .search-form input {
-  width: 300px; /* Adjust the width of the input field */
+  width: 300px;
   padding: 10px;
-  margin-right: 10px; /* Adjust the right margin as needed */
+  margin-right: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.search-form button {
+.search-form button,
+.load-more,
+.to-search-form {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
-  background-color: #007bff;
   color: #fff;
   cursor: pointer;
 }
-
-.search-form button:hover {
-  transform: scale(1.03);
+.search-form button,
+.to-search-form {
+  background-color: var(--primary-color);
 }
-:root {
-  --timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  --animation-duration: 250ms;
+.load-more {
+  background-color: var(--secondary-color);
+}
+.search-form button:hover,
+.load-more:hover,
+.to-search-form:hover,
+.photo-card:hover {
+  transform: scale(1.03);
 }
 
 .gallery {
@@ -57,10 +70,6 @@ body {
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
 }
 
-.photo-card:hover {
-  transform: scale(1.03);
-}
-
 .photo-card img {
   height: 100%;
   width: 100%;
@@ -72,12 +81,7 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.8
-  ); /* Semi-transparent white background */
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 16px;
   box-sizing: border-box;
 }
@@ -86,31 +90,7 @@ body {
   font-size: 14px;
   color: #333;
 }
-
-.load-more {
-  padding: 10px 20px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: darkgrey;
-  color: #fff;
-  cursor: pointer;
-}
-
-.load-more:hover {
-  transform: scale(1.03);
-}
-
+.load-more,
 .to-search-form {
-  padding: 10px 20px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: #fff;
-  cursor: pointer;
-}
-
-.to-search-form:hover {
-  transform: scale(1.03);
+  margin-top: 20px;
 }

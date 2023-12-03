@@ -1,4 +1,3 @@
-// Import required modules
 import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
@@ -26,7 +25,7 @@ const createApiRequest = () => {
       };
       try {
         const response = await axios(options);
-        apiRequest.pageCount += 1;
+
         return response.data;
       } catch (error) {
         Notify.failure(`Oops! Something went wrong! Error:` + error);
@@ -43,83 +42,88 @@ const createApiRequest = () => {
   return apiRequest;
 };
 
-// Select DOM elements
 const searchForm = document.querySelector('.search-form');
 const inputEl = document.querySelector('form > input');
 const gallery = document.querySelector('.gallery');
-const scrollToTopButton = document.createElement('button');
+const scrollToTopButton = document.querySelector('.to-search-form');
 const loadMoreButton = document.querySelector('.load-more');
+// setari initiale pentru butoane
 loadMoreButton.style.display = 'none';
 scrollToTopButton.style.display = 'none';
-// Set up event listener for the search form
+
 searchForm.addEventListener('submit', whileSearching);
 loadMoreButton.addEventListener('click', () => {
   fetchGallery();
 });
 
-// Set up event listener for the "Home" button
 scrollToTopButton.addEventListener('click', () => {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
+  window.scrollTo(0, 0);
 });
-
-// Initialize variables for infinite scrolling
+// variabile pentru paginatie
 let perPage = 40;
 let totalPages = 1;
-let endreached = false;
 let lightbox;
+
 const apiRequest = createApiRequest();
 
 // Search function
 function whileSearching(event) {
   event.preventDefault();
   gallery.innerHTML = '';
-  endreached = false;
-  loadMoreButton.style.display = 'none';
-  scrollToTopButton.style.display = 'none';
+
   apiRequest.query = inputEl.value.trim();
   apiRequest.pageCount = 1;
+
   if (apiRequest.query === '') {
     Notify.warning('Please, fill the main field');
     return;
   }
-
   fetchGallery();
 }
 
-// Fetch gallery function
 async function fetchGallery() {
-  if (apiRequest.pageCount > totalPages) {
-    Notify.info("We're sorry, but you've reached the end of search results.");
-    endreached = true;
-    scrollToTopButton.style.display = 'block';
-    loadMoreButton.style.display = 'block';
-    return;
-  }
-
+  loadMoreButton.style.display = 'none';
+  scrollToTopButton.style.display = 'none';
   const result = await apiRequest.fetchImages();
-  console.log(result);
+  // daca nu avem nici un result, curatam input-ul si return
   if (!result) {
     inputEl.value = '';
     return;
   }
 
   const { hits, total } = result;
-  if (apiRequest.pageCount === 2) {
-    if (total === 0) {
-      Notify.failure(
-        `Sorry, there are no images matching your search query. Please try again.`
-      );
-      return;
-    }
-    totalPages = Math.floor(total / perPage) + 1;
+  if (total === 0) {
+    Notify.failure(
+      `Sorry, there are no images matching your search query. Please try again.`
+    );
+    return;
+  }
+  if (apiRequest.pageCount === 1) {
+    totalPages = Math.ceil(total / perPage) + 1;
     Notify.success(`Found ${total} images!`);
   }
-
   displayImages(hits);
 
+  apiRequest.pageCount += 1;
+
+  let isEndReached = apiRequest.pageCount >= totalPages;
+  let hasMoreImages = total > perPage * (apiRequest.pageCount - 1);
+
+  loadMoreButton.style.display = hasMoreImages ? 'block' : 'none';
+
+  scrollToTopButton.style.display =
+    apiRequest.pageCount === 2 && isEndReached
+      ? 'none'
+      : (loadMoreButton.style.display = hasMoreImages ? 'block' : 'none');
+
+  scrollToTopButton.style.display =
+    apiRequest.pageCount === 2 && isEndReached ? 'none' : 'block';
+
+  if (isEndReached && !hasMoreImages) {
+    Notify.info("We are sorry, but you've reached the end of search results.");
+  }
+
   if (apiRequest.pageCount === 2) {
-    loadMoreButton.style.display = 'block';
     lightbox = new SimpleLightbox('.gallery a', {
       captions: true,
       captionsData: 'alt',
@@ -128,8 +132,14 @@ async function fetchGallery() {
   } else {
     lightbox.refresh();
   }
+  scrollDownToLastCard();
 }
-
+function scrollDownToLastCard() {
+  const lastCard = document.querySelector('.gallery .photo-card:last-child');
+  if (lastCard) {
+    lastCard.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+}
 // Function to display images in the gallery
 function displayImages(images) {
   const markup = images
@@ -158,8 +168,4 @@ function displayImages(images) {
     )
     .join('');
   gallery.insertAdjacentHTML('beforeend', markup);
-
-  if (apiRequest.pageCount > totalPages) {
-    scrollToTopButton.style.display = 'block';
-  }
 }
