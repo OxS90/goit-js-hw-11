@@ -12,7 +12,10 @@ body {
   align-items: center;
   justify-content: flex-start;
   height: 100vh;
-  background-color: #f0f0f0;
+  background-image: url(images/search-image.jpg);
+  background-size: 100vh;
+  background-repeat: no-repeat;
+  background-position: center;
   scroll-behavior: smooth;
 }
 
